@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32922.545
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQSEncryption", "SQSEncryption\SQSEncryption.csproj", "{FADDB90D-F6D9-47DF-8FBB-C6D1CA510F61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQSEncryption.Common", "SQSEncryption.Common\SQSEncryption.Common.csproj", "{79E4C1EC-0805-4B69-8129-5C077AFAB08E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SQSEncryption.Lambda.Processor", "SQSEncryption.Lambda.Processor\SQSEncryption.Lambda.Processor.csproj", "{0919E359-DA40-4357-B01A-EC6469AA886C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FADDB90D-F6D9-47DF-8FBB-C6D1CA510F61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FADDB90D-F6D9-47DF-8FBB-C6D1CA510F61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FADDB90D-F6D9-47DF-8FBB-C6D1CA510F61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FADDB90D-F6D9-47DF-8FBB-C6D1CA510F61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79E4C1EC-0805-4B69-8129-5C077AFAB08E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79E4C1EC-0805-4B69-8129-5C077AFAB08E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79E4C1EC-0805-4B69-8129-5C077AFAB08E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79E4C1EC-0805-4B69-8129-5C077AFAB08E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0919E359-DA40-4357-B01A-EC6469AA886C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0919E359-DA40-4357-B01A-EC6469AA886C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0919E359-DA40-4357-B01A-EC6469AA886C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0919E359-DA40-4357-B01A-EC6469AA886C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BB77FAF5-876C-4803-964E-7C33DCF67F79}
+	EndGlobalSection
+EndGlobal
