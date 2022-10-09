@@ -2,11 +2,19 @@ using Amazon.Lambda.Annotations;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
 using SQSEncryption.Common;
+using SQSEncryption.Lambda.Processor;
+using System.Text.Json.Serialization;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
-[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
+[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.SourceGeneratorLambdaJsonSerializer<SQSJsonSerializerContext>))]
 
 namespace SQSEncryption.Lambda.Processor;
+
+[JsonSerializable(typeof(SQSEvent))]
+[JsonSerializable(typeof(SQSBatchResponse))]
+public partial class SQSJsonSerializerContext : JsonSerializerContext
+{
+}
 
 public class Functions
 {
