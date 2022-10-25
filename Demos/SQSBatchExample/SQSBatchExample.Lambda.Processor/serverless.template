@@ -1,0 +1,41 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "An AWS Serverless Application.",
+  "Resources": {
+    "SQSProcessor": {
+      "Type": "AWS::Serverless::Function",
+      "Metadata": {
+        "Tool": "Amazon.Lambda.Annotations"
+      },
+      "Properties": {
+        "Runtime": "dotnet6",
+        "CodeUri": ".",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Policies": [
+          "AWSLambdaBasicExecutionRole",
+          "PowerUserAccess"
+        ],
+        "PackageType": "Zip",
+        "Handler": "SQSBatchExample.Lambda.Processor::SQSBatchExample.Lambda.Processor.Functions_Processor_Generated::Processor",
+        "Environment": {
+          "Variables": {
+            "MESSAGE_KMS_KEY": "arn:aws:kms:us-west-2:626492997873:key/7a739407-ac6d-4483-9f2c-74dc25ebde74",
+            "LAMBDA_NET_SERIALIZER_DEBUG": "true"
+          }
+        },
+        "Events": {
+          "Messages": {
+            "Type": "SQS",
+            "Properties": {
+              "Queue": "arn:aws:sqs:us-west-2:626492997873:ClientSideEncryptionExample",
+              "BatchSize": 10
+            }
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {}
+}
