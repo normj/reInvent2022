@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSSDK.BuildSystem.MessageProcessor", "AWSSDK.BuildSystem.MessageProcessor\AWSSDK.BuildSystem.MessageProcessor.csproj", "{BDA22C65-FCAD-436E-B3BE-93E9B292E334}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.MessageProcessor", "AWSSDK.BuildSystem.MessageProcessor\AWSSDK.BuildSystem.MessageProcessor.csproj", "{BDA22C65-FCAD-436E-B3BE-93E9B292E334}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSSDK.BuildSystem.ConsoleClient", "AWSSDK.BuildSystem.ConsoleClient\AWSSDK.BuildSystem.ConsoleClient.csproj", "{612EEF65-99D8-4FEB-BD70-7A8ECD2B6D5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.ConsoleClient", "AWSSDK.BuildSystem.ConsoleClient\AWSSDK.BuildSystem.ConsoleClient.csproj", "{612EEF65-99D8-4FEB-BD70-7A8ECD2B6D5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSSDK.BuildSystem.Common", "AWSSDK.BuildSystem.Common\AWSSDK.BuildSystem.Common.csproj", "{E58F158C-C228-4D8B-94D2-8E2B56D53207}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.Common", "AWSSDK.BuildSystem.Common\AWSSDK.BuildSystem.Common.csproj", "{E58F158C-C228-4D8B-94D2-8E2B56D53207}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.MessageProcessor.Deployment", "AWSSDK.BuildSystem.MessageProcessor.Deployment\AWSSDK.BuildSystem.MessageProcessor.Deployment.csproj", "{D759956F-7A66-4E5D-AA53-1C79FBFE65E6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.LambdaClient", "AWSSDK.BuildSystem.LambdaClient\AWSSDK.BuildSystem.LambdaClient.csproj", "{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{E58F158C-C228-4D8B-94D2-8E2B56D53207}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E58F158C-C228-4D8B-94D2-8E2B56D53207}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E58F158C-C228-4D8B-94D2-8E2B56D53207}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D759956F-7A66-4E5D-AA53-1C79FBFE65E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D759956F-7A66-4E5D-AA53-1C79FBFE65E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D759956F-7A66-4E5D-AA53-1C79FBFE65E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D759956F-7A66-4E5D-AA53-1C79FBFE65E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

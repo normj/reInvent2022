@@ -8,7 +8,9 @@ namespace AWSSDK.BuildSystem.MessageProcessor
 {
     public class AppSettings
     {
-        public string QueueUrl { get; set; }
+        public string BuildMessagesQueueUrl { get; set; }
         public string KmsKeyArn { get; set; }
+
+        public string BuildStatusTopicArn { get; set; }
     }
 }

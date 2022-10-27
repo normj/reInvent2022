@@ -1,5 +1,7 @@
 ﻿using Amazon.SQS;
 using Amazon.SQS.Model;
+using Amazon.SimpleNotificationService;
+using Amazon.SimpleNotificationService.Model;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,6 +15,8 @@ using System.Threading.Tasks;
 using AWSSDK.BuildSystem.Common;
 using static AWSSDK.BuildSystem.Common.Constants;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
+using AWSSDK.BuildSystem.MessageProcessor.BuildTasks;
 
 namespace AWSSDK.BuildSystem.MessageProcessor
 {
@@ -21,16 +25,19 @@ namespace AWSSDK.BuildSystem.MessageProcessor
         protected const int VISIBLITY_TIMEOUT = 60;
 
         private readonly IAmazonSQS _sqsClient;
+        private readonly IAmazonSimpleNotificationService _snsClient;
         private readonly ILogger _logger;
         private readonly AppSettings _appSettings;
 
 
         public BuildQueueProcessor(
             IAmazonSQS sqsClient,
+            IAmazonSimpleNotificationService snsClient
             ILogger<BuildQueueProcessor> logger,
             IOptions<AppSettings> appSettings)
         {
             _sqsClient = sqsClient;
+            _snsClient = snsClient;
             _logger = logger;
             _appSettings = appSettings.Value;
         }
@@ -40,14 +47,14 @@ namespace AWSSDK.BuildSystem.MessageProcessor
         {
             var readRequest = new ReceiveMessageRequest
             {
-                QueueUrl = _appSettings.QueueUrl,
+                QueueUrl = _appSettings.BuildMessagesQueueUrl,
                 VisibilityTimeout = VISIBLITY_TIMEOUT,
                 WaitTimeSeconds = 20,
                 MaxNumberOfMessages = 1,
                 MessageAttributeNames = new List<string> { ".*" }
             };
 
-            _logger.LogInformation($"Starting to watch Queue {_appSettings.QueueUrl}");
+            _logger.LogInformation($"Starting to watch Queue {_appSettings.BuildMessagesQueueUrl}");
 
             while (!token.IsCancellationRequested)
             {
@@ -65,6 +72,30 @@ namespace AWSSDK.BuildSystem.MessageProcessor
                         _logger.LogDebug("Processing Queue messages");
                         foreach (var message in response.Messages)
                         {
+                            _logger.LogInformation("Message Attribute Count: " + message.MessageAttributes.Count);
+                            ActivityContext parentContext;
+                            //if(message.MessageAttributes.ContainsKey(Constants.TRACE_ID_MESSAGE_ATTRIBUTE_KEY))
+                            //{
+                            //    _logger.LogInformation("Found parent trace");
+                            //    var traceId = message.MessageAttributes[Constants.TRACE_ID_MESSAGE_ATTRIBUTE_KEY].StringValue;
+                            //    var spanId = message.MessageAttributes[Constants.SPAN_ID_MESSAGE_ATTRIBUTE_KEY].StringValue;
+
+                            //    string traceState = null;
+                            //    if(message.MessageAttributes.ContainsKey(Constants.TRACE_STATE_MESSAGE_ATTRIBUTE_KEY))
+                            //    {
+                            //        traceState = message.MessageAttributes[Constants.TRACE_STATE_MESSAGE_ATTRIBUTE_KEY].StringValue;
+                            //    }
+
+                            //    parentContext = new ActivityContext(ActivityTraceId.CreateFromString(traceId), ActivitySpanId.CreateFromString(spanId), ActivityTraceFlags.Recorded, traceState, true);
+                            //}
+                            using var activity = Telemetry.RootActivitySource.StartActivity("Reading Message", ActivityKind.Consumer, parentContext);
+                            if (activity == null)
+                            {
+                                _logger.LogInformation("Failed to start activity");
+                                continue;
+                            }
+                            activity.AddBaggage("MessageId", message.MessageId);
+
                             using (_logger.BeginScope($"Message: {message.MessageId}"))
                             {
                                 var logData = new
@@ -87,7 +118,7 @@ namespace AWSSDK.BuildSystem.MessageProcessor
                                     {
                                         var request = new ChangeMessageVisibilityRequest
                                         {
-                                            QueueUrl = _appSettings.QueueUrl,
+                                            QueueUrl = _appSettings.BuildMessagesQueueUrl,
                                             ReceiptHandle = message.ReceiptHandle,
                                             VisibilityTimeout = VISIBLITY_TIMEOUT
                                         };
@@ -97,7 +128,7 @@ namespace AWSSDK.BuildSystem.MessageProcessor
 
                                 if (processMessageTask.GetAwaiter().GetResult())
                                 {
-                                    await _sqsClient.DeleteMessageAsync(_appSettings.QueueUrl, message.ReceiptHandle);
+                                    await _sqsClient.DeleteMessageAsync(_appSettings.BuildMessagesQueueUrl, message.ReceiptHandle);
                                 }
                             }
                         }
@@ -134,31 +165,57 @@ namespace AWSSDK.BuildSystem.MessageProcessor
 
             var messageBody = message.Body;
 
-            switch (buildType)
+            try
             {
-                case BuildType.PreviewBuild:
-                    await PreviewBuildAsync(messageBody);
-                    break;
-                case BuildType.ReleaseBuild:
-                    await ReleaseAsync(messageBody);
-                    break;
+                switch (buildType)
+                {
+                    case BuildType.PreviewBuild:
+                        await PreviewBuildAsync(messageBody);
+                        break;
+                    case BuildType.ReleaseBuild:
+                        await ReleaseAsync(messageBody);
+                        break;
 
+                }
+
+            }
+            catch(Exception e)
+            {
+                var snsRequest = new PublishRequest
+                {
+                    TopicArn = _appSettings.BuildStatusTopicArn,
+                    Message = 
+                }
+                return false;
             }
 
             return true;
         }
 
-        private Task PreviewBuildAsync(string messageBody)
+        private async Task PreviewBuildAsync(string messageBody)
         {
+            using var activity = Telemetry.RootActivitySource.StartActivity("Starting preview build");
+
             var previewMessage = JsonSerializer.Deserialize<PreviewMessage>(messageBody);
+            activity.AddTag("AWSServiceName", previewMessage.ServiceName);
+
             _logger.LogInformation($"Running preview build for {previewMessage.ServiceName}");
-            return Task.CompletedTask;
+
+            var command = new PreviewBuildCommand(previewMessage);
+            await command.ExecuteAsync();
         }
 
-        private Task ReleaseAsync(string messageBody)
+        private async Task ReleaseAsync(string messageBody)
         {
+            using var activity = Telemetry.RootActivitySource.StartActivity("Starting release build");
+
+            var releaseMessage = JsonSerializer.Deserialize<ReleaseMessage>(messageBody);
+
+
             _logger.LogInformation("Running release build");
-            return Task.CompletedTask;
+
+            var command = new ReleaseBuildCommand(releaseMessage);
+            await command.ExecuteAsync();
         }
     }
 }

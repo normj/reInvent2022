@@ -25,19 +25,22 @@ var modelUrl = s3Client.GetPreSignedURL(new GetPreSignedUrlRequest
     Expires = DateTime.UtcNow.AddHours(5)
 });
 
-var previewMessage = new PreviewMessage(serviceName: "DynamoDB", modelUrl: modelUrl);
-var message = JsonSerializer.Serialize(previewMessage);
-
-var sendRequest = new SendMessageRequest
+for (int i = 0; i < 5; i++)
 {
-    QueueUrl = queueUrl,
-    MessageBody = message,
+    var previewMessage = new PreviewMessage(serviceName: "DynamoDB", modelUrl: modelUrl);
+    var message = JsonSerializer.Serialize(previewMessage);
 
-    // Use attributes so processor can decide what action to take without having to parse message body
-    MessageAttributes = new Dictionary<string, MessageAttributeValue>
+    var sendRequest = new SendMessageRequest
+    {
+        QueueUrl = queueUrl,
+        MessageBody = message,
+
+        // Use attributes so processor can decide what action to take without having to parse message body
+        MessageAttributes = new Dictionary<string, MessageAttributeValue>
     {
         {Constants.BUILD_TYPE_MESSAGE_ATTRIBUTE_KEY, new MessageAttributeValue{StringValue = BuildType.PreviewBuild.ToString(), DataType = "String"} }
     }
-};
+    };
 
-await sqsClient.SendMessageAsync(sendRequest);
+    await sqsClient.SendMessageAsync(sendRequest);
+}
