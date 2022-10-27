@@ -1,0 +1,38 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "An AWS Serverless Application.",
+  "Resources": {
+    "PreviewBuildHandler": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SDK.Orchestrator.EventBus::SDK.Orchestrator.EventBus.Functions::PreviewBuildHandler",
+        "Runtime": "dotnet6",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [
+          "AWSLambdaBasicExecutionRole"
+        ]
+      }
+    },
+    "ApprovedReleaseBuildHandler": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SDK.Orchestrator.EventBus::SDK.Orchestrator.EventBus.Functions::ApprovedReleaseBuildHandler",
+        "Runtime": "dotnet6",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [
+          "AWSLambdaBasicExecutionRole"
+        ]
+      }
+    }
+  },
+  "Outputs": {
+
+  }
+}
