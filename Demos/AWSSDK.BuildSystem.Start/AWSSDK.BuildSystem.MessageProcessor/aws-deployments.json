@@ -1,0 +1,7 @@
+{
+  "DeploymentProjects": [
+    {
+      "Path": "..\\AWSSDK.BuildSystem.MessageProcessor.Deployment"
+    }
+  ]
+}
