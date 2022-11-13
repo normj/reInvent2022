@@ -16,7 +16,6 @@ traceProviderBuilder
     .AddAWSInstrumentation()
     .AddConsoleExporter();
 #else
-
 traceProviderBuilder
     .AddXRayTraceId()
     .AddSource(Telemetry.ServiceName)

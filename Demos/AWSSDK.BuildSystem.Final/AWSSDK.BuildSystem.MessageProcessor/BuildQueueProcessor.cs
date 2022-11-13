@@ -17,6 +17,7 @@ using static AWSSDK.BuildSystem.Common.Constants;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using AWSSDK.BuildSystem.MessageProcessor.BuildTasks;
+using SQSEncryption.Common;
 
 namespace AWSSDK.BuildSystem.MessageProcessor
 {
@@ -28,11 +29,11 @@ namespace AWSSDK.BuildSystem.MessageProcessor
         private readonly IAmazonSimpleNotificationService _snsClient;
         private readonly ILogger _logger;
         private readonly AppSettings _appSettings;
-
+        private readonly MessageEncryption _messageEncryption;
 
         public BuildQueueProcessor(
             IAmazonSQS sqsClient,
-            IAmazonSimpleNotificationService snsClient
+            IAmazonSimpleNotificationService snsClient,
             ILogger<BuildQueueProcessor> logger,
             IOptions<AppSettings> appSettings)
         {
@@ -40,6 +41,8 @@ namespace AWSSDK.BuildSystem.MessageProcessor
             _snsClient = snsClient;
             _logger = logger;
             _appSettings = appSettings.Value;
+
+            _messageEncryption = new MessageEncryption(_appSettings.KmsKeyArn);
         }
 
 
@@ -74,20 +77,6 @@ namespace AWSSDK.BuildSystem.MessageProcessor
                         {
                             _logger.LogInformation("Message Attribute Count: " + message.MessageAttributes.Count);
                             ActivityContext parentContext;
-                            //if(message.MessageAttributes.ContainsKey(Constants.TRACE_ID_MESSAGE_ATTRIBUTE_KEY))
-                            //{
-                            //    _logger.LogInformation("Found parent trace");
-                            //    var traceId = message.MessageAttributes[Constants.TRACE_ID_MESSAGE_ATTRIBUTE_KEY].StringValue;
-                            //    var spanId = message.MessageAttributes[Constants.SPAN_ID_MESSAGE_ATTRIBUTE_KEY].StringValue;
-
-                            //    string traceState = null;
-                            //    if(message.MessageAttributes.ContainsKey(Constants.TRACE_STATE_MESSAGE_ATTRIBUTE_KEY))
-                            //    {
-                            //        traceState = message.MessageAttributes[Constants.TRACE_STATE_MESSAGE_ATTRIBUTE_KEY].StringValue;
-                            //    }
-
-                            //    parentContext = new ActivityContext(ActivityTraceId.CreateFromString(traceId), ActivitySpanId.CreateFromString(spanId), ActivityTraceFlags.Recorded, traceState, true);
-                            //}
                             using var activity = Telemetry.RootActivitySource.StartActivity("Reading Message", ActivityKind.Consumer, parentContext);
                             if (activity == null)
                             {
@@ -126,10 +115,10 @@ namespace AWSSDK.BuildSystem.MessageProcessor
                                     }
                                 }
 
-                                if (processMessageTask.GetAwaiter().GetResult())
-                                {
-                                    await _sqsClient.DeleteMessageAsync(_appSettings.BuildMessagesQueueUrl, message.ReceiptHandle);
-                                }
+                                // Await completed task to bubble up any exceptions that occurred processing the message.
+                                await processMessageTask;
+
+                                await _sqsClient.DeleteMessageAsync(_appSettings.BuildMessagesQueueUrl, message.ReceiptHandle);
                             }
                         }
                     }
@@ -163,7 +152,7 @@ namespace AWSSDK.BuildSystem.MessageProcessor
                 throw new ApplicationException($"Unknown build type: {buildTypeStr}");
             }
 
-            var messageBody = message.Body;
+            var messageBody = _messageEncryption.Decrypt(message.Body);
 
             try
             {
@@ -181,11 +170,6 @@ namespace AWSSDK.BuildSystem.MessageProcessor
             }
             catch(Exception e)
             {
-                var snsRequest = new PublishRequest
-                {
-                    TopicArn = _appSettings.BuildStatusTopicArn,
-                    Message = 
-                }
                 return false;
             }
 

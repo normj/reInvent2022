@@ -5,10 +5,11 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 
 using AWSSDK.BuildSystem.Common;
+using SQSEncryption.Common;
 using System.Text.Json;
 
 string kmsKeyArn = "arn:aws:kms:us-west-2:626492997873:key/7a739407-ac6d-4483-9f2c-74dc25ebde74";
-var queueUrl = "https://sqs.us-west-2.amazonaws.com/626492997873/SdkBuild";
+var queueUrl = "https://sqs.us-west-2.amazonaws.com/626492997873/SdkBuild.fifo";
 var bucketName = "normj-sdkbuild";
 var objectKey = "dynamodb.zip";
 
@@ -25,7 +26,9 @@ var modelUrl = s3Client.GetPreSignedURL(new GetPreSignedUrlRequest
     Expires = DateTime.UtcNow.AddHours(5)
 });
 
-for (int i = 0; i < 5; i++)
+var messageEncryption = new MessageEncryption(kmsKeyArn);
+
+for (int i = 0; i < 1; i++)
 {
     var previewMessage = new PreviewMessage(serviceName: "DynamoDB", modelUrl: modelUrl);
     var message = JsonSerializer.Serialize(previewMessage);
@@ -33,13 +36,14 @@ for (int i = 0; i < 5; i++)
     var sendRequest = new SendMessageRequest
     {
         QueueUrl = queueUrl,
-        MessageBody = message,
+        MessageBody = messageEncryption.Encrypt(message),
+        MessageGroupId = "DynamoDB",
 
         // Use attributes so processor can decide what action to take without having to parse message body
         MessageAttributes = new Dictionary<string, MessageAttributeValue>
-    {
-        {Constants.BUILD_TYPE_MESSAGE_ATTRIBUTE_KEY, new MessageAttributeValue{StringValue = BuildType.PreviewBuild.ToString(), DataType = "String"} }
-    }
+        {
+            {Constants.BUILD_TYPE_MESSAGE_ATTRIBUTE_KEY, new MessageAttributeValue{StringValue = BuildType.PreviewBuild.ToString(), DataType = "String"} }
+        }
     };
 
     await sqsClient.SendMessageAsync(sendRequest);
