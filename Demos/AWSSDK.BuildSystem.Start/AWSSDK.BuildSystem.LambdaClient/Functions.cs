@@ -59,7 +59,7 @@ public class Functions
             Expires = DateTime.UtcNow.AddHours(5)
         });
 
-        var previewMessage = new PreviewMessage(serviceName: "DynamoDB", modelUrl: modelUrl);
+        var previewMessage = new PreviewMessage(buildId: Guid.NewGuid().ToString(), serviceName: "DynamoDB", modelUrl: modelUrl);
         var message = JsonSerializer.Serialize(previewMessage);
 
         var sendRequest = new SendMessageRequest

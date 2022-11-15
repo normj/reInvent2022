@@ -21,7 +21,7 @@ namespace AWSSDK.BuildSystem.ConsoleClient
             _s3Client = new AmazonS3Client(region);
         }
 
-        public async Task SendPreviewBuildMessage(string service, string bucketName, string objectKey)
+        public async Task SendPreviewBuildMessage(string buildId, string service, string bucketName, string objectKey)
         {
             var modelUrl = _s3Client.GetPreSignedURL(new GetPreSignedUrlRequest
             {
@@ -30,7 +30,7 @@ namespace AWSSDK.BuildSystem.ConsoleClient
                 Expires = DateTime.UtcNow.AddHours(5)
             });
 
-            var previewMessage = new PreviewMessage(serviceName: service, modelUrl: modelUrl);
+            var previewMessage = new PreviewMessage(buildId: buildId, serviceName: service, modelUrl: modelUrl);
             var message = JsonSerializer.Serialize(previewMessage);
 
             var sendRequest = new SendMessageRequest
