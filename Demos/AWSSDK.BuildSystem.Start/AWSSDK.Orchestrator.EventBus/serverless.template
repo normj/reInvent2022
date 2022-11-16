@@ -1,0 +1,47 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "An AWS Serverless Application.",
+  "Globals": {
+    "Function": {
+      "Environment": {
+        "Variables": {
+          "AWS_LAMBDA_HANDLER_LOG_LEVEL": "Debug"
+        }
+      }
+    }
+  },
+  "Resources": {
+    "PreviewBuildHandler": {
+      "Type": "AWS::Serverless::Function",
+      "Metadata": {
+        "Tool": "Amazon.Lambda.Annotations"
+      },
+      "Properties": {
+        "Runtime": "dotnet6",
+        "CodeUri": ".",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "PackageType": "Zip",
+        "Role": "arn:aws:iam::626492997873:role/LambdaDemoRole",
+        "Handler": "AWSSDK.Orchestrator.EventBus::AWSSDK.Orchestrator.EventBus.Functions_PreviewBuildHandler_Generated::PreviewBuildHandler"
+      }
+    },
+    "ReleaseBuildHandler": {
+      "Type": "AWS::Serverless::Function",
+      "Metadata": {
+        "Tool": "Amazon.Lambda.Annotations"
+      },
+      "Properties": {
+        "Runtime": "dotnet6",
+        "CodeUri": ".",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "PackageType": "Zip",
+        "Role": "arn:aws:iam::626492997873:role/LambdaDemoRole",
+        "Handler": "AWSSDK.Orchestrator.EventBus::AWSSDK.Orchestrator.EventBus.Functions_ReleaseBuildHandler_Generated::ReleaseBuildHandler"
+      }
+    }
+  },
+  "Outputs": {}
+}

@@ -19,6 +19,8 @@ using System.Diagnostics;
 using AWSSDK.BuildSystem.MessageProcessor.BuildTasks;
 using SQSEncryption.Common;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Mail;
+using System.Globalization;
 
 namespace AWSSDK.BuildSystem.MessageProcessor
 {
@@ -142,6 +144,8 @@ namespace AWSSDK.BuildSystem.MessageProcessor
 
             var messageBody = message.Body;
 
+            var buildId = message.MessageAttributes[BUILD_ID_MESSAGE_ATTRIBUTE_KEY].StringValue;
+            BuildStatusMessage buildStatusMessage;
             try
             {
                 switch (buildType)
@@ -152,16 +156,16 @@ namespace AWSSDK.BuildSystem.MessageProcessor
                     case BuildType.ReleaseBuild:
                         await ReleaseAsync(messageBody);
                         break;
-
                 }
 
+                buildStatusMessage = new BuildStatusMessage(true, buildType, buildId, null);
             }
             catch(Exception e)
-            {
-                return false;
+            {                
+                buildStatusMessage = new BuildStatusMessage(false ,buildType, buildId, e.ToString());
             }
 
-            return true;
+            return buildStatusMessage.Success;
         }
 
 

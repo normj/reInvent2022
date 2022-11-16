@@ -18,15 +18,17 @@ namespace AWSSDK.BuildSystem.MessageProcessor.BuildTasks
             _message = message;
         }
 
-        public override async Task ExecuteAsync()
+        public override Task ExecuteAsync()
         {
-            await PrepareWorkspaceAsync();
+            throw new NotImplementedException("You are demoing from re:Invent not supposed to be releasing live bits");
+            
+            //await PrepareWorkspaceAsync();
 
-            await RunReleaseMSBuildAsync();
+            //await RunReleaseMSBuildAsync();
 
-            await GenerateAPIDocsAsync();
+            //await GenerateAPIDocsAsync();
 
-            await UploadArtifactsAsync("/tmp/workspace", "/release/");
+            //await UploadArtifactsAsync("/tmp/workspace", "/release/");
 
         }
 
