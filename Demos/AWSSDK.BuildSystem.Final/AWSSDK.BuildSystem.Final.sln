@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.MessageP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.LambdaClient", "AWSSDK.BuildSystem.LambdaClient\AWSSDK.BuildSystem.LambdaClient.csproj", "{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.LambdaFailedBuildNotifier", "AWSSDK.BuildSystem.LambdaFailedBuildNotifier\AWSSDK.BuildSystem.LambdaFailedBuildNotifier.csproj", "{0248E6BD-968F-4675-A702-73238FAF6155}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.Orchestrator.EventBus", "AWSSDK.Orchestrator.EventBus\AWSSDK.Orchestrator.EventBus.csproj", "{9736D105-CF52-4CD8-88A3-86BAB06FAD13}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0248E6BD-968F-4675-A702-73238FAF6155}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0248E6BD-968F-4675-A702-73238FAF6155}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0248E6BD-968F-4675-A702-73238FAF6155}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0248E6BD-968F-4675-A702-73238FAF6155}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9736D105-CF52-4CD8-88A3-86BAB06FAD13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9736D105-CF52-4CD8-88A3-86BAB06FAD13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9736D105-CF52-4CD8-88A3-86BAB06FAD13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9736D105-CF52-4CD8-88A3-86BAB06FAD13}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

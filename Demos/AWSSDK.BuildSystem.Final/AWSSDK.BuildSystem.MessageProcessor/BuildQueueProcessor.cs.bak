@@ -18,33 +18,31 @@ using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using AWSSDK.BuildSystem.MessageProcessor.BuildTasks;
 using SQSEncryption.Common;
-using Microsoft.Extensions.DependencyInjection;
-using System.Net.Mail;
-using System.Globalization;
 
 namespace AWSSDK.BuildSystem.MessageProcessor
 {
     public class BuildQueueProcessor : BackgroundService
     {
         protected const int VISIBLITY_TIMEOUT = 60;
-        private readonly IServiceProvider _serviceProvider;
+
         private readonly IAmazonSQS _sqsClient;
         private readonly IAmazonSimpleNotificationService _snsClient;
         private readonly ILogger _logger;
         private readonly AppSettings _appSettings;
+        private readonly MessageEncryption _messageEncryption;
 
         public BuildQueueProcessor(
-            IServiceProvider serviceProvider,
             IAmazonSQS sqsClient,
             IAmazonSimpleNotificationService snsClient,
             ILogger<BuildQueueProcessor> logger,
             IOptions<AppSettings> appSettings)
         {
-            _serviceProvider = serviceProvider;
             _sqsClient = sqsClient;
             _snsClient = snsClient;
             _logger = logger;
             _appSettings = appSettings.Value;
+
+            _messageEncryption = new MessageEncryption(_appSettings.KmsKeyArn);
         }
 
 
@@ -65,12 +63,9 @@ namespace AWSSDK.BuildSystem.MessageProcessor
             {
                 try
                 {
-                    using var pollActivity = Telemetry.RootActivitySource.StartActivity("Poll for messages");
-                    // Poll for messages
                     _logger.LogInformation("Pinging SQS for new messages.");
                     var response = await _sqsClient.ReceiveMessageAsync(readRequest, token);
                     _logger.LogDebug("SQS response" + response.Messages.Count);
-
                     if (response.Messages.Count == 0)
                     {
                         _logger.LogDebug($"No messages received queue.");
@@ -81,8 +76,14 @@ namespace AWSSDK.BuildSystem.MessageProcessor
                         foreach (var message in response.Messages)
                         {
                             _logger.LogInformation("Message Attribute Count: " + message.MessageAttributes.Count);
-                            using var activity = Telemetry.RootActivitySource.StartActivity("Process message");
-                            activity.AddTag("MessageId", message.MessageId);
+                            ActivityContext parentContext;
+                            using var activity = Telemetry.RootActivitySource.StartActivity("Reading Message", ActivityKind.Consumer, parentContext);
+                            if (activity == null)
+                            {
+                                _logger.LogInformation("Failed to start activity");
+                                continue;
+                            }
+                            activity.AddBaggage("MessageId", message.MessageId);
 
                             using (_logger.BeginScope($"Message: {message.MessageId}"))
                             {
@@ -151,10 +152,8 @@ namespace AWSSDK.BuildSystem.MessageProcessor
                 throw new ApplicationException($"Unknown build type: {buildTypeStr}");
             }
 
-            var messageBody = message.Body;
+            var messageBody = _messageEncryption.Decrypt(message.Body);
 
-            var buildId = message.MessageAttributes[BUILD_ID_MESSAGE_ATTRIBUTE_KEY].StringValue;
-            BuildStatusMessage buildStatusMessage;
             try
             {
                 switch (buildType)
@@ -165,30 +164,16 @@ namespace AWSSDK.BuildSystem.MessageProcessor
                     case BuildType.ReleaseBuild:
                         await ReleaseAsync(messageBody);
                         break;
+
                 }
 
-                buildStatusMessage = new BuildStatusMessage(true, buildType, buildId, null);
             }
             catch(Exception e)
             {
-                buildStatusMessage = new BuildStatusMessage(false ,buildType, buildId, e.ToString());
+                return false;
             }
 
-            await _snsClient.PublishAsync(new PublishRequest
-            {
-                TopicArn = _appSettings.BuildStatusTopicArn,
-                Message = JsonSerializer.Serialize(buildStatusMessage),
-                MessageAttributes = new Dictionary<string, Amazon.SimpleNotificationService.Model.MessageAttributeValue>
-                {
-                    {Constants.BUILD_RESULT_MESSAGE_ATTRIBUTE_KEY,
-                        new Amazon.SimpleNotificationService.Model.MessageAttributeValue{StringValue = buildStatusMessage.Success.ToString(CultureInfo.InvariantCulture), DataType = "String"} },
-
-                    {Constants.BUILD_TYPE_MESSAGE_ATTRIBUTE_KEY,
-                        new Amazon.SimpleNotificationService.Model.MessageAttributeValue{StringValue = buildStatusMessage.BuildType.ToString(), DataType = "String"} }
-                }
-            });
-
-            return buildStatusMessage.Success;
+            return true;
         }
 
         private async Task PreviewBuildAsync(string messageBody)
@@ -200,7 +185,7 @@ namespace AWSSDK.BuildSystem.MessageProcessor
 
             _logger.LogInformation($"Running preview build for {previewMessage.ServiceName}");
 
-            var command = ActivatorUtilities.CreateInstance<PreviewBuildCommand>(_serviceProvider, previewMessage);  
+            var command = new PreviewBuildCommand(previewMessage);
             await command.ExecuteAsync();
         }
 
@@ -213,7 +198,7 @@ namespace AWSSDK.BuildSystem.MessageProcessor
 
             _logger.LogInformation("Running release build");
 
-            var command = ActivatorUtilities.CreateInstance<ReleaseBuildCommand>(_serviceProvider, releaseMessage);
+            var command = new ReleaseBuildCommand(releaseMessage);
             await command.ExecuteAsync();
         }
     }

@@ -1,0 +1,16 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AppSettings": {
+    "BuildMessagesQueueUrl": "https://sqs.us-west-2.amazonaws.com/626492997873/SdkBuild.fifo",
+    "BuildStatusTopicArn": "arn:aws:sns:us-west-2:626492997873:SdkBuildStatus"
+  },
+  "AWS": {
+    "Region": "us-west-2",
+    "Profile": "default"
+  }
+}
