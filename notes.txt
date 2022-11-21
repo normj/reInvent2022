@@ -1,11 +1,69 @@
 
-
-Topics:
-
-* Encryption
-FIFO
-
-Montoring/Tracing
+13:30
+9:00
+11:00
 
 
+Preparation:
+Delete fifo queue
+	Make ConsoleClient and appsettings.json are not referencing fifo queue
 
+	
+Delete Topic Lambda Subscription
+Delete EventBus Preview Rule
+
+
+
+
+
+            await _snsClient.PublishAsync(new PublishRequest
+            {
+                TopicArn = _appSettings.BuildStatusTopicArn,
+                Message = JsonSerializer.Serialize(buildStatusMessage),
+                MessageAttributes = new Dictionary<string, Amazon.SimpleNotificationService.Model.MessageAttributeValue>
+                {
+                    {Constants.BUILD_RESULT_MESSAGE_ATTRIBUTE_KEY, 
+                        new Amazon.SimpleNotificationService.Model.MessageAttributeValue{StringValue = buildStatusMessage.Success.ToString(CultureInfo.InvariantCulture), DataType = "String"} },
+                        
+                    {Constants.BUILD_TYPE_MESSAGE_ATTRIBUTE_KEY, 
+                        new Amazon.SimpleNotificationService.Model.MessageAttributeValue{StringValue = buildStatusMessage.BuildType.ToString(), DataType = "String"} }
+                }
+            });
+			
+{
+   "BuildType": ["ReleaseBuild"],
+   "BuildResult": ["False"]
+}
+
+
+
+
+{
+  "id": "1",
+  "account": "12312341234",
+  "source": "SDK.Orchestrator",
+  "time": "2022-11-28T01:29:23Z",
+  "region": "us-west-2",
+  "resources": "",
+  "detail-type": "PreviewBuild",
+  "detail": {
+    "BuildId": "abcdef",
+    "ServiceName": "DynamoDB",
+    "ModelUrl": "http://foobar/foo"
+  }
+}
+
+{
+    "BuildId": "abcdef",
+    "ServiceName": "DynamoDB",
+    "ModelUrl": "http://foobar/foo"
+}
+
+
+{
+  "detail-type": ["PreviewBuild"]
+}
+
+{
+  "detail-type": ["ReleaseBuild"]
+}
