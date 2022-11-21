@@ -1,10 +1,8 @@
 ﻿using Amazon;
 using Amazon.S3;
-using Amazon.S3.Model;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using AWSSDK.BuildSystem.Common;
-using SQSEncryption.Common;
 using System.Text.Json;
 
 namespace AWSSDK.BuildSystem.ConsoleClient
@@ -13,12 +11,10 @@ namespace AWSSDK.BuildSystem.ConsoleClient
     {
         string _queueUrl = "https://sqs.us-west-2.amazonaws.com/626492997873/SdkBuild";
         private IAmazonSQS _sqsClient;
-        private AmazonS3Client _s3Client;
 
         public BuildMessagePublisher(RegionEndpoint region)
         {
             _sqsClient = new AmazonSQSClient(region);
-            _s3Client = new AmazonS3Client(region);
         }
 
         public async Task SendPreviewBuildMessage(PreviewMessage previewMessage)

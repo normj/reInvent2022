@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.ConsoleC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.Common", "AWSSDK.BuildSystem.Common\AWSSDK.BuildSystem.Common.csproj", "{E58F158C-C228-4D8B-94D2-8E2B56D53207}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.LambdaClient", "AWSSDK.BuildSystem.LambdaClient\AWSSDK.BuildSystem.LambdaClient.csproj", "{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.LambdaFailedBuildNotifier", "AWSSDK.BuildSystem.LambdaFailedBuildNotifier\AWSSDK.BuildSystem.LambdaFailedBuildNotifier.csproj", "{105CBFC4-BE35-4AF6-A1A2-2DCAFE603309}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.Orchestrator.EventBus", "AWSSDK.Orchestrator.EventBus\AWSSDK.Orchestrator.EventBus.csproj", "{A2EE8688-023C-4923-AB8F-A6167DFE6AFB}"
@@ -33,10 +31,6 @@ Global
 		{E58F158C-C228-4D8B-94D2-8E2B56D53207}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E58F158C-C228-4D8B-94D2-8E2B56D53207}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E58F158C-C228-4D8B-94D2-8E2B56D53207}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Release|Any CPU.Build.0 = Release|Any CPU
 		{105CBFC4-BE35-4AF6-A1A2-2DCAFE603309}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{105CBFC4-BE35-4AF6-A1A2-2DCAFE603309}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{105CBFC4-BE35-4AF6-A1A2-2DCAFE603309}.Release|Any CPU.ActiveCfg = Release|Any CPU
