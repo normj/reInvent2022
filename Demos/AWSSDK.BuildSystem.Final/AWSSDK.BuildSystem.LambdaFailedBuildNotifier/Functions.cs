@@ -21,7 +21,7 @@ public class Functions
     {
         _traceProvider = Sdk.CreateTracerProviderBuilder()
             .AddXRayTraceId()
-            .AddSource("Amazon.AWS.AWSClientInstrumentation")
+            .AddSource(Telemetry.ServiceName)
             .AddAWSInstrumentation()
             .AddAWSLambdaConfigurations()
             .AddOtlpExporter()
@@ -35,13 +35,17 @@ public class Functions
 
     public async Task InstrumentedProcessFailedBuild(SNSEvent evnt, ILambdaContext context)
     {
+        using var activity = Telemetry.RootActivitySource.StartActivity("Start processing SNS event");
         foreach(var message in evnt.Records)
         {
             var buildStatusMessage = JsonSerializer.Deserialize<BuildStatusMessage>(message.Sns.Message);
+            using var buildActivity = Telemetry.RootActivitySource.StartActivity("Notifiy for build failure");
+            buildActivity.AddTag("BuildId", buildStatusMessage.BuildId);
 
             context.Logger.LogError($"Build {buildStatusMessage.BuildId} failed: {buildStatusMessage.BuildException}");
 
             // TODO: Page .NET on-call engineer for build failure.
+            await Task.Delay(1000);
         }
         await Task.CompletedTask;
     }

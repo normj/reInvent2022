@@ -38,11 +38,13 @@ public class Functions
     public async Task InstrumentedPreviewBuildHandler(CloudWatchEvent<PreviewMessage> evnt, ILambdaContext context)
     {
         context.Logger.LogInformation("Preparing preview build: " + evnt.Detail.ServiceName);
-
+        
         var previewMessage = evnt.Detail;
         var message = JsonSerializer.Serialize(previewMessage);
 
+        using var activity = Telemetry.RootActivitySource.StartActivity("Looking up registered queues");
         var queueUrls = await _orchestratorManager.GetBuildQueuesAsync(BuildType.PreviewBuild);
+
         foreach (var queueUrl in queueUrls)
         {
             var sendRequest = new SendMessageRequest
@@ -58,6 +60,9 @@ public class Functions
                     {Constants.BUILD_ID_MESSAGE_ATTRIBUTE_KEY, new MessageAttributeValue{StringValue = previewMessage.BuildId, DataType = "String"} }
                 }
             };
+
+            using var sendActivity = Telemetry.RootActivitySource.StartActivity("Send Preview Message");
+            sendActivity?.AddTag("BuildId", previewMessage.BuildId);
 
             context.Logger.LogDebug($"Sending preview message to {queueUrl}");
             await _sqsClient.SendMessageAsync(sendRequest);
@@ -78,9 +83,14 @@ public class Functions
         var releaseMessage = evnt.Detail;
         var message = JsonSerializer.Serialize(releaseMessage);
 
+        using var activity = Telemetry.RootActivitySource.StartActivity("Looking up registered queues");
         var queueUrls = await _orchestratorManager.GetBuildQueuesAsync(BuildType.ReleaseBuild);
+
         foreach (var queueUrl in queueUrls)
         {
+            using var sendActivity = Telemetry.RootActivitySource.StartActivity("Send Preview Message");
+            sendActivity?.AddTag("BuildId", releaseMessage.BuildId);
+            
             var sendRequest = new SendMessageRequest
             {
                 QueueUrl = queueUrl,
@@ -94,6 +104,7 @@ public class Functions
                     {Constants.BUILD_ID_MESSAGE_ATTRIBUTE_KEY, new MessageAttributeValue{StringValue = releaseMessage.BuildId, DataType = "String"} }
                 }
             };
+
 
             await _sqsClient.SendMessageAsync(sendRequest);
         }

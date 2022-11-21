@@ -11,11 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.Common",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.MessageProcessor.Deployment", "AWSSDK.BuildSystem.MessageProcessor.Deployment\AWSSDK.BuildSystem.MessageProcessor.Deployment.csproj", "{D759956F-7A66-4E5D-AA53-1C79FBFE65E6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.LambdaClient", "AWSSDK.BuildSystem.LambdaClient\AWSSDK.BuildSystem.LambdaClient.csproj", "{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.BuildSystem.LambdaFailedBuildNotifier", "AWSSDK.BuildSystem.LambdaFailedBuildNotifier\AWSSDK.BuildSystem.LambdaFailedBuildNotifier.csproj", "{0248E6BD-968F-4675-A702-73238FAF6155}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.Orchestrator.EventBus", "AWSSDK.Orchestrator.EventBus\AWSSDK.Orchestrator.EventBus.csproj", "{9736D105-CF52-4CD8-88A3-86BAB06FAD13}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.Orchestrator.EventBus.EventGenerator", "AWSSDK.Orchestrator.EventBus.EventGenerator\AWSSDK.Orchestrator.EventBus.EventGenerator.csproj", "{196A4682-0B3D-48BE-A3B1-9368912F40C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,10 +39,6 @@ Global
 		{D759956F-7A66-4E5D-AA53-1C79FBFE65E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D759956F-7A66-4E5D-AA53-1C79FBFE65E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D759956F-7A66-4E5D-AA53-1C79FBFE65E6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1C88E044-9D57-49A3-ADE8-E5101C4C4B33}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0248E6BD-968F-4675-A702-73238FAF6155}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0248E6BD-968F-4675-A702-73238FAF6155}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0248E6BD-968F-4675-A702-73238FAF6155}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,6 +47,10 @@ Global
 		{9736D105-CF52-4CD8-88A3-86BAB06FAD13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9736D105-CF52-4CD8-88A3-86BAB06FAD13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9736D105-CF52-4CD8-88A3-86BAB06FAD13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{196A4682-0B3D-48BE-A3B1-9368912F40C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{196A4682-0B3D-48BE-A3B1-9368912F40C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{196A4682-0B3D-48BE-A3B1-9368912F40C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{196A4682-0B3D-48BE-A3B1-9368912F40C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

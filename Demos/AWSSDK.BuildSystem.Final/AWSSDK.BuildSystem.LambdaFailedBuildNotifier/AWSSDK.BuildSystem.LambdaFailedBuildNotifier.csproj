@@ -21,4 +21,9 @@
   <ItemGroup>
     <ProjectReference Include="..\AWSSDK.BuildSystem.Common\AWSSDK.BuildSystem.Common.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="collector.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

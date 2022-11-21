@@ -22,6 +22,8 @@ namespace AWSSDK.BuildSystem.MessageProcessor.BuildTasks
 
             await RunReleaseMSBuildAsync();
 
+            throw new NotImplementedException("You are demoing from re:Invent not supposed to be releasing live bits");
+
             await GenerateAPIDocsAsync();
 
             await UploadArtifactsAsync("/tmp/workspace", "/release/");

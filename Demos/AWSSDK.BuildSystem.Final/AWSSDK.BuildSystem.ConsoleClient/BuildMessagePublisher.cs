@@ -1,10 +1,7 @@
 ﻿using Amazon;
-using Amazon.S3;
-using Amazon.S3.Model;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using AWSSDK.BuildSystem.Common;
-using SQSEncryption.Common;
 using System.Text.Json;
 
 namespace AWSSDK.BuildSystem.ConsoleClient

@@ -21,6 +21,7 @@ using SQSEncryption.Common;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Mail;
 using System.Globalization;
+using OpenTelemetry.Trace;
 
 namespace AWSSDK.BuildSystem.MessageProcessor
 {
@@ -82,19 +83,13 @@ namespace AWSSDK.BuildSystem.MessageProcessor
                         {
                             _logger.LogInformation("Message Attribute Count: " + message.MessageAttributes.Count);
                             using var activity = Telemetry.RootActivitySource.StartActivity("Process message");
-                            activity.AddTag("MessageId", message.MessageId);
+                            activity.AddTag("MessageId", message.MessageId);                            
 
                             using (_logger.BeginScope($"Message: {message.MessageId}"))
                             {
-                                var logData = new
-                                {
-                                    Message = message,
-                                    MessageId = message.MessageId,
-                                    MessageBody = JsonSerializer.Serialize(message.Body)
-                                };
                                 _logger.LogInformation($"Processing message {message.MessageId} from queue");
 
-                                var processMessageTask = ProcessMessageAsync(message);
+                                var processMessageTask = ProcessMessageAsync(message, activity);
 
                                 // Monitor processing task and if it is taken a long time to process
                                 // update the message visiblity to avoid it getting processed again.
@@ -115,7 +110,10 @@ namespace AWSSDK.BuildSystem.MessageProcessor
                                 }
 
                                 // Await completed task to bubble up any exceptions that occurred processing the message.
-                                await processMessageTask;
+                                if(!(await processMessageTask))
+                                {
+                                    pollActivity.SetStatus(ActivityStatusCode.Error);
+                                }
 
                                 await _sqsClient.DeleteMessageAsync(_appSettings.BuildMessagesQueueUrl, message.ReceiptHandle);
                             }
@@ -137,7 +135,7 @@ namespace AWSSDK.BuildSystem.MessageProcessor
         }
 
 
-        protected async Task<bool> ProcessMessageAsync(Message message)
+        protected async Task<bool> ProcessMessageAsync(Message message, Activity activity)
         {
             // Get task 
             var buildTypeStr = message.MessageAttributes[BUILD_TYPE_MESSAGE_ATTRIBUTE_KEY].StringValue;
@@ -154,6 +152,9 @@ namespace AWSSDK.BuildSystem.MessageProcessor
             var messageBody = message.Body;
 
             var buildId = message.MessageAttributes[BUILD_ID_MESSAGE_ATTRIBUTE_KEY].StringValue;
+            activity.AddTag("BuildId", buildId);
+            activity.AddTag("BuildType", buildType.ToString());
+
             BuildStatusMessage buildStatusMessage;
             try
             {
@@ -172,6 +173,8 @@ namespace AWSSDK.BuildSystem.MessageProcessor
             catch(Exception e)
             {
                 buildStatusMessage = new BuildStatusMessage(false ,buildType, buildId, e.ToString());
+                activity.RecordException(e);
+                activity.SetStatus(System.Diagnostics.ActivityStatusCode.Error, e.Message);
             }
 
             await _snsClient.PublishAsync(new PublishRequest

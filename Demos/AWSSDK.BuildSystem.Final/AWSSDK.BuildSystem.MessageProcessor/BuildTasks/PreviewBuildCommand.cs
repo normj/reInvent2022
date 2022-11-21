@@ -29,6 +29,11 @@ namespace AWSSDK.BuildSystem.MessageProcessor.BuildTasks
         {
             using var activity = Telemetry.RootActivitySource.StartActivity("Preview MSBuild Target");
 
+            if(_message.ServiceName == "EC2")
+            {
+                throw new ApplicationException("Service model is invalid");
+            }
+
             await Task.Delay(2000);
         }
     }

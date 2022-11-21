@@ -6,7 +6,8 @@
     "Function": {
       "Environment": {
         "Variables": {
-          "AWS_LAMBDA_HANDLER_LOG_LEVEL": "Debug"
+          "AWS_LAMBDA_HANDLER_LOG_LEVEL": "Debug",
+          "OPENTELEMETRY_COLLECTOR_CONFIG_FILE": "/var/task/collector.yaml"
         }
       },
       "Layers": [

@@ -1,4 +1,4 @@
-﻿    using Amazon.S3;
+﻿using Amazon.S3;
 using Amazon.S3.Model;
 using AWSSDK.BuildSystem.Common;
 using AWSSDK.BuildSystem.ConsoleClient;
@@ -15,12 +15,34 @@ var modelUrl = s3Client.GetPreSignedURL(new GetPreSignedUrlRequest
     Expires = DateTime.UtcNow.AddHours(5)
 });
 
-var previewMessage = new PreviewMessage(buildId: Guid.NewGuid().ToString(), serviceName: "DynamoDB", modelUrl: modelUrl);
-await buildMessagePublisher.SendPreviewBuildMessage(previewMessage);
+while(true)
+{
+    Console.WriteLine("Select Build Message Type");
+    Console.WriteLine("-------------------------");
+    Console.WriteLine("1: Preview Message");
+    Console.WriteLine("2: Release Message");
 
-//var services = new List<ServiceModel>
-//{
-//    new ServiceModel("DynamoDB", modelUrl),
-//};
-//var releaseMessage = new ReleaseMessage(buildId: Guid.NewGuid().ToString(), services);
-//await buildMessagePublisher.SendReleaseBuildMessage(releaseMessage);
+    var input = Console.ReadLine()?.Trim();
+    if (input == "1")
+    {
+        var previewMessage = new PreviewMessage(buildId: Guid.NewGuid().ToString(), serviceName: "DynamoDB", modelUrl: modelUrl);
+        await buildMessagePublisher.SendPreviewBuildMessage(previewMessage);
+        Console.WriteLine("Preview build message sent");
+        break;
+    }
+    else if (input == "2")
+    {
+        var services = new List<ServiceModel>
+        {
+            new ServiceModel("DynamoDB", modelUrl),
+        };
+        var releaseMessage = new ReleaseMessage(buildId: Guid.NewGuid().ToString(), services);
+        await buildMessagePublisher.SendReleaseBuildMessage(releaseMessage);
+        Console.WriteLine("Release build message sent");
+        break;
+    }
+    else
+    {
+        Console.Error.WriteLine("Invalid option: " + input);
+    }
+}

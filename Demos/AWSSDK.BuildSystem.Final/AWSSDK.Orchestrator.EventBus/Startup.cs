@@ -20,7 +20,7 @@ namespace AWSSDK.Orchestrator.EventBus
         {
             var traceProvider = Sdk.CreateTracerProviderBuilder()
                 .AddXRayTraceId()
-                .AddSource("Amazon.AWS.AWSClientInstrumentation")
+                .AddSource(Telemetry.ServiceName)
                 .AddAWSInstrumentation()
                 .AddAWSLambdaConfigurations()
                 .AddOtlpExporter()
