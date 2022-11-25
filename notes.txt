@@ -1,7 +1,4 @@
 Preparation:
-Delete fifo queue
-	Make ConsoleClient and appsettings.json are not referencing fifo queue
-
 	
 Delete Topic Lambda Subscription
 Delete EventBus Preview Rule
@@ -60,4 +57,20 @@ Delete EventBus Preview Rule
 
 {
   "detail-type": ["ReleaseBuild"]
+}
+
+
+
+
+
+
+
+// SNS Filter policy when using payload filter
+{
+  "BuildType": [
+    "ReleaseBuild"
+  ],
+  "Success": [
+    false
+  ]
 }
