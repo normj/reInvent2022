@@ -9,7 +9,7 @@ namespace AWSSDK.BuildSystem.ConsoleClient
 {
     public class BuildMessagePublisher
     {
-        string _queueUrl = "https://sqs.us-west-2.amazonaws.com/626492997873/SdkBuild";
+        string _queueUrl = "https://sqs.us-west-2.amazonaws.com/626492997873/SdkBuild.fifo";
         private IAmazonSQS _sqsClient;
 
         public BuildMessagePublisher(RegionEndpoint region)
@@ -25,6 +25,7 @@ namespace AWSSDK.BuildSystem.ConsoleClient
             {
                 QueueUrl = _queueUrl,
                 MessageBody = message,
+                MessageGroupId = previewMessage.ServiceName,
 
                 // Use attributes so processor can decide what action to take without having to parse message body
                 MessageAttributes = new Dictionary<string, MessageAttributeValue>
@@ -45,6 +46,7 @@ namespace AWSSDK.BuildSystem.ConsoleClient
             {
                 QueueUrl = _queueUrl,
                 MessageBody = message,
+                MessageGroupId = Constants.RELEASE_MESSAGE_GROUP_ID,
 
                 // Use attributes so processor can decide what action to take without having to parse message body
                 MessageAttributes = new Dictionary<string, MessageAttributeValue>
