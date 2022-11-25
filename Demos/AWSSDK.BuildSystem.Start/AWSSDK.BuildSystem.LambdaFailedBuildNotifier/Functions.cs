@@ -11,9 +11,17 @@ namespace AWSSDK.BuildSystem.LambdaFailedBuildNotifier;
 
 public class Functions
 {
+    private readonly JsonSerializerOptions _jsonOptions;
+
 
     public Functions()
     {
+        _jsonOptions = new JsonSerializerOptions
+        {
+            Converters = {
+                    new JsonStringEnumConverter()
+                }
+        };
     }
 
 
@@ -21,7 +29,7 @@ public class Functions
     {
         foreach(var message in evnt.Records)
         {
-            var buildStatusMessage = JsonSerializer.Deserialize<BuildStatusMessage>(message.Sns.Message);
+            var buildStatusMessage = JsonSerializer.Deserialize<BuildStatusMessage>(message.Sns.Message, _jsonOptions);
 
             context.Logger.LogError($"Build {buildStatusMessage.BuildId} failed: {buildStatusMessage.BuildException}");
 

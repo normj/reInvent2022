@@ -1,26 +1,21 @@
-﻿using Amazon.SQS;
+﻿using System.Text.Json;
+using System.Globalization;
+using System.Text.Json.Serialization;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
+
+using Amazon.SQS;
 using Amazon.SQS.Model;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 using AWSSDK.BuildSystem.Common;
-using static AWSSDK.BuildSystem.Common.Constants;
-using Microsoft.Extensions.Options;
-using System.Diagnostics;
 using AWSSDK.BuildSystem.MessageProcessor.BuildTasks;
-using SQSEncryption.Common;
-using Microsoft.Extensions.DependencyInjection;
-using System.Net.Mail;
-using System.Globalization;
+
+using static AWSSDK.BuildSystem.Common.Constants;
+
 
 namespace AWSSDK.BuildSystem.MessageProcessor
 {
@@ -32,6 +27,7 @@ namespace AWSSDK.BuildSystem.MessageProcessor
         private readonly IAmazonSimpleNotificationService _snsClient;
         private readonly ILogger _logger;
         private readonly AppSettings _appSettings;
+        private readonly JsonSerializerOptions _jsonOptions;
 
         public BuildQueueProcessor(
             IServiceProvider serviceProvider,
@@ -45,6 +41,13 @@ namespace AWSSDK.BuildSystem.MessageProcessor
             _snsClient = snsClient;
             _logger = logger;
             _appSettings = appSettings.Value;
+
+            _jsonOptions = new JsonSerializerOptions
+            {
+                Converters = { 
+                    new JsonStringEnumConverter()
+                }
+            };
         }
 
 
@@ -53,10 +56,10 @@ namespace AWSSDK.BuildSystem.MessageProcessor
             var readRequest = new ReceiveMessageRequest
             {
                 QueueUrl = _appSettings.BuildMessagesQueueUrl,
-                VisibilityTimeout = VISIBLITY_TIMEOUT,
                 WaitTimeSeconds = 20,
                 MaxNumberOfMessages = 1,
-                MessageAttributeNames = new List<string> { ".*" }
+                MessageAttributeNames = new List<string> { ".*" },
+                VisibilityTimeout = VISIBLITY_TIMEOUT
             };
 
             _logger.LogInformation($"Starting to watch Queue {_appSettings.BuildMessagesQueueUrl}");
