@@ -61,3 +61,8 @@ Delete EventBus Preview Rule
 {
   "detail-type": ["ReleaseBuild"]
 }
+
+
+
+service("Poll for messages") { fault = true }
+
