@@ -20,7 +20,7 @@ public class MessageEncryption : IMessageEncryption
 
     IAwsEncryptionSdk _encryptionSdk;
     IKeyring _keyRing;
-
+#nullable disable warnings  
     public MessageEncryption()
     {
         var kmsKeyArn = Environment.GetEnvironmentVariable(MESSAGE_KMS_KEY_ENV);
@@ -36,6 +36,7 @@ public class MessageEncryption : IMessageEncryption
     {
         SetupEncryptionSdk(kmsKeyArn);
     }
+#nullable restore warnings    
 
     private void SetupEncryptionSdk(string kmsKeyArn)
     {
