@@ -10,7 +10,7 @@ Delete EventBus Preview Rule
             await _snsClient.PublishAsync(new PublishRequest
             {
                 TopicArn = _appSettings.BuildStatusTopicArn,
-                Message = JsonSerializer.Serialize(buildStatusMessage),
+                Message = JsonSerializer.Serialize(buildStatusMessage, _jsonOptions),
                 MessageAttributes = new Dictionary<string, Amazon.SimpleNotificationService.Model.MessageAttributeValue>
                 {
                     {Constants.BUILD_RESULT_MESSAGE_ATTRIBUTE_KEY, 

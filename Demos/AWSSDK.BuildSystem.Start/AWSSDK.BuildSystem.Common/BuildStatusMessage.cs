@@ -8,8 +8,9 @@ namespace AWSSDK.BuildSystem.Common
 {
     public class BuildStatusMessage
     {
+#nullable disable warnings         
         public BuildStatusMessage() { }
-
+#nullable restore warnings
 
         public BuildStatusMessage(bool success, BuildType buildType, string buildId, string? buildException)
         {

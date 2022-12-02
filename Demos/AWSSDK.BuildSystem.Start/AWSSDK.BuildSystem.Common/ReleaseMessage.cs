@@ -8,8 +8,9 @@ namespace AWSSDK.BuildSystem.Common
 {
     public class ReleaseMessage
     {
+#nullable disable warnings        
         public ReleaseMessage() { }
-
+#nullable restore warnings
         public ReleaseMessage(string buildId) 
         { 
             this.BuildId= buildId;
